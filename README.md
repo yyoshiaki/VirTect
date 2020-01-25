@@ -11,6 +11,11 @@ Here is an example that how VirTect works, for the HCC sample, we have about 53 
 
 This is a GitHub repository for the documentation of the VirTect software, described in the paper listed below. If you like this repository, please click on the "Star" button on top of this page, to show appreciation to the repository maintainer. If you want to receive notifications on changes to this repository, please click the "Watch" button on top of this page.
 
+## Log by yyoshiaki
+
+2020/01/25
+- Converted to python3
+
 ## Dependency
 
 First we need to install the following publicly available tools to run VirTect:
