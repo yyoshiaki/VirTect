@@ -148,7 +148,7 @@ def main():
         os.system(cmd5)
 
         # cmd6= '''samtools view '''+out+"/unmapped_aln.bam"+''' | cut -f3 | sort | uniq -c | awk '{if ($1>=400) print $0}' > '''+out+"/unmapped_viruses_count.txt"+''' '''
-        cmd6= "samtools view {o}/unmapped_aln.bam | cut -f3 | sort | uniq -c | awk '{if ($1>=400) print $0}' > {o}/unmapped_viruses_count.txt ".format(o=out)
+        cmd6= "samtools view %s/unmapped_aln.bam | cut -f3 | sort | uniq -c | awk '{if ($1>=400) print $0}' > %s/unmapped_viruses_count.txt " % (out, out)
         print('Running ', cmd6)
         os.system(cmd6)
     virus_detection() 
