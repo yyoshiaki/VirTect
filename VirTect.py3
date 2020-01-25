@@ -1,9 +1,9 @@
-##################################################################################
+##########################################################################
 # Author: Atlas Khan (ak4046@cumc.columbia.edu)
 # Created Time: 2017-05-31
 # Wang genomics lab http://wglab.org/
 # Description: python script for virus detection from human RNA-seq samples
-##################################################################################
+##########################################################################
 
 #!/usr/bin/env python
 
@@ -22,7 +22,7 @@ Copyright (C) 2017 Wang Genomic Lab
 VerTect is free for non-commercial use without warranty.
 Please contact the authors for commercial use.
 Written by Atlas Khan, ak4046@cumc.columbia.edu and atlas.akhan@gmail.com.
-Revised by Qian Liu for the maintenance. 
+Revised by Qian Liu for the maintenance.
 ============================================================================
 """
 
@@ -36,28 +36,54 @@ def main():
     parser = argparse.ArgumentParser(
         description='VirTect: A pipeline for Virus detection')
 
-    parser.add_argument('-t', '--n_thread', required=False,
-                        metavar='Number of threads, default: 8', default='8', type=str, help='Number of threads')
-    parser.add_argument('-1', '--fq1',  required=True, metavar='read1.fastq',
+    parser.add_argument(
+        '-t',
+        '--n_thread',
+        required=False,
+        metavar='Number of threads, default: 8',
+        default='8',
+        type=str,
+        help='Number of threads')
+    parser.add_argument('-1', '--fq1', required=True, metavar='read1.fastq',
                         type=str, help='The read 1 of the paired end RNA-seq')
 
-    parser.add_argument('-2', '--fq2',  required=True, metavar='read2.fastq',
+    parser.add_argument('-2', '--fq2', required=True, metavar='read2.fastq',
                         type=str, help='The read 2 of the paired end RNA-seq')
 
-    parser.add_argument('-o', '--out',  required=True, metavar='The output name for alignement',
-                        type=str, help='Define the output directory to be stored the alignement results')
+    parser.add_argument(
+        '-o',
+        '--out',
+        required=True,
+        metavar='The output name for alignement',
+        type=str,
+        help='Define the output directory to be stored the alignement results')
 
-    parser.add_argument('-ucsc_gene', '--gtf',  required=True,
+    parser.add_argument('-ucsc_gene', '--gtf', required=True,
                         metavar='gtf', type=str, help='The input gtf file')
 
-    parser.add_argument('-index', '--index_dir',  required=True, metavar='index files', type=str,
-                        help='The directory of index files with hg38 prefix of the fasta file i.e,. index_files_directory/hg38')
+    parser.add_argument(
+        '-index',
+        '--index_dir',
+        required=True,
+        metavar='index files',
+        type=str,
+        help='The directory of index files with hg38 prefix of the fasta file i.e,. index_files_directory/hg38')
 
-    parser.add_argument('-index_vir', '--index_vir',  required=True,
-                        metavar='virus fasta', type=str, help='The fasta file of the virus genomes')
+    parser.add_argument(
+        '-index_vir',
+        '--index_vir',
+        required=True,
+        metavar='virus fasta',
+        type=str,
+        help='The fasta file of the virus genomes')
 
-    parser.add_argument('-d', '--distance', required=True, metavar='continuous_distance',
-                        type=int, help='Define the continuous mapping distance of mapping reads to virus genome')
+    parser.add_argument(
+        '-d',
+        '--distance',
+        required=True,
+        metavar='continuous_distance',
+        type=int,
+        help='Define the continuous mapping distance of mapping reads to virus genome')
 
     args = parser.parse_args()
 
@@ -118,35 +144,37 @@ def main():
     print("Aligning by tophat")
 
     def alignment():
-        cmd1 = 'tophat2 -o '+out+' -p '+n_thread + \
-            ' -G '+gtf+' '+index_dir+' '+fq1+'  '+fq2+''
+        cmd1 = 'tophat2 -o ' + out + ' -p ' + n_thread + \
+            ' -G ' + gtf + ' ' + index_dir + ' ' + fq1 + '  ' + fq2 + ''
         print('Running ', cmd1)
         # os.system(cmd1)
         subprocess.run(cmd1, shell=True)
     alignment()
 
     def bam2fastq():
-        cmd2 = 'samtools sort -n  '+out+'/unmapped.bam  -o '+out+'/unmapped_sorted.bam'
+        cmd2 = 'samtools sort -n  ' + out + \
+            '/unmapped.bam  -o ' + out + '/unmapped_sorted.bam'
         print('Running ', cmd2)
         # os.system(cmd2)
         subprocess.run(cmd2, shell=True)
-        cmd3 = 'bedtools bamtofastq -i  '+out+'/unmapped_sorted.bam -fq  ' + \
-            out+'/unmapped_sorted_1.fq -fq2  '+out+'/unmapped_sorted_2.fq'
+        cmd3 = 'bedtools bamtofastq -i  ' + out + '/unmapped_sorted.bam -fq  ' + \
+            out + '/unmapped_sorted_1.fq -fq2  ' + out + '/unmapped_sorted_2.fq'
         print('Running ', cmd3)
         # os.system(cmd3)
         subprocess.run(cmd3, shell=True)
     bam2fastq()
 
     def bwa_alignment():
-        cmd4 = 'bwa mem '+index_vir+'  '+out+'/unmapped_sorted_1.fq ' + \
-            out+'/unmapped_sorted_2.fq > '+out+'/unmapped_aln.sam'
+        cmd4 = 'bwa mem ' + index_vir + '  ' + out + '/unmapped_sorted_1.fq ' + \
+            out + '/unmapped_sorted_2.fq > ' + out + '/unmapped_aln.sam'
         print('Running ', cmd4)
         # os.system(cmd4)
         subprocess.run(cmd4, shell=True)
     bwa_alignment()
 
     def virus_detection():
-        cmd5 = 'samtools view -Sb -h '+out+'/unmapped_aln.sam > '+out+'/unmapped_aln.bam'
+        cmd5 = 'samtools view -Sb -h ' + out + \
+            '/unmapped_aln.sam > ' + out + '/unmapped_aln.bam'
         print('Running ', cmd5)
         # os.system(cmd5)
         subprocess.run(cmd5, shell=True)
@@ -160,8 +188,8 @@ def main():
     virus_detection()
 
     def sort():
-        cmd7 = '''samtools sort '''+out+"/unmapped_aln.bam" + \
-            '''  -o '''+out+"/unmapped_aln_sorted.bam"+''' '''
+        cmd7 = '''samtools sort ''' + out + "/unmapped_aln.bam" + \
+            '''  -o ''' + out + "/unmapped_aln_sorted.bam" + ''' '''
         # os.system(cmd7)
         print('Running ', cmd7)
         subprocess.run(cmd7, shell=True)
@@ -176,16 +204,16 @@ def main():
     subprocess.run(cmd8, shell=True)
 
     print("The continous length")
-    file = open(out+"/continuous_region.txt", "r")
+    file = open(out + "/continuous_region.txt", "r")
 
-    out_put = open(out+"/Final_continous_region.txt", "w")
+    out_put = open(out + "/Final_continous_region.txt", "w")
 
     if (os.fstat(file.fileno()).st_size) > 0:
         for i in file.readlines():
             i1 = i.split()[0]
             i2 = i.split()[1]
             j1 = i2.split("-")
-            j2 = int(j1[1])-int(j1[0])
+            j2 = int(j1[1]) - int(j1[0])
 
             if j2 >= distance:
                 j3 = i1 + "\t" + str(j1[0]) + '\t' + str(j1[1])
@@ -197,11 +225,12 @@ def main():
         pass
     out_put.close()
 
-    final_output = open(out+"/Final_continous_region.txt", 'r')
+    final_output = open(out + "/Final_continous_region.txt", 'r')
     if (os.fstat(final_output.fileno()).st_size) > 0:
         print("----------------------------------------Note: The sample may have some real virus :(-----------------------------------------------------")
         headers = 'virus transcript_start transcript_end'.split()
-        for line in fileinput.input([out+'/Final_continous_region.txt'], inplace=True):
+        for line in fileinput.input(
+                [out + '/Final_continous_region.txt'], inplace=True):
             if fileinput.isfirstline():
                 print('\t'.join(headers))
             print(line.strip())
