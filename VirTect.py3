@@ -124,38 +124,45 @@ def main():
     def alignment():
         cmd1='tophat2 -o '+out+' -p '+n_thread+' -G '+gtf+' '+index_dir+' '+fq1+'  '+fq2+''
         print('Running ', cmd1)
-        os.system(cmd1)
+        # os.system(cmd1)
+        subprocess.run(cmd1, shell=True)
     alignment()
         
     def bam2fastq():
         cmd2 ='samtools sort -n  '+out+'/unmapped.bam  -o '+out+'/unmapped_sorted.bam' 
         print('Running ', cmd2)
-        os.system(cmd2)    
+        # os.system(cmd2)    
+        subprocess.run(cmd2, shell=True)
         cmd3='bedtools bamtofastq -i  '+out+'/unmapped_sorted.bam -fq  '+out+'/unmapped_sorted_1.fq -fq2  '+out+'/unmapped_sorted_2.fq'    
         print('Running ', cmd3)
-        os.system(cmd3)
+        # os.system(cmd3)
+        subprocess.run(cmd3, shell=True)
     bam2fastq()
  
     def bwa_alignment():
         cmd4= 'bwa mem '+index_vir+'  '+out+'/unmapped_sorted_1.fq '+out+'/unmapped_sorted_2.fq > '+out+'/unmapped_aln.sam'
         print('Running ', cmd4)
-        os.system(cmd4)
+        # os.system(cmd4)
+        subprocess.run(cmd4, shell=True)
     bwa_alignment()
     
     def virus_detection():
         cmd5= 'samtools view -Sb -h '+out+'/unmapped_aln.sam > '+out+'/unmapped_aln.bam'
         print('Running ', cmd5)
-        os.system(cmd5)
+        # os.system(cmd5)
+        subprocess.run(cmd5, shell=True)
 
         # cmd6= '''samtools view '''+out+"/unmapped_aln.bam"+''' | cut -f3 | sort | uniq -c | awk '{if ($1>=400) print $0}' > '''+out+"/unmapped_viruses_count.txt"+''' '''
         cmd6= "samtools view %s/unmapped_aln.bam | cut -f3 | sort | uniq -c | awk '{if ($1>=400) print $0}' > %s/unmapped_viruses_count.txt " % (out, out)
         print('Running ', cmd6)
-        os.system(cmd6)
+        # os.system(cmd6)
+        subprocess.run(cmd6, shell=True)
     virus_detection() 
         
     def sort():
         cmd7= '''samtools sort '''+out+"/unmapped_aln.bam"+'''  -o '''+out+"/unmapped_aln_sorted.bam"+''' '''
-        os.system(cmd7)
+        # os.system(cmd7)
+        subprocess.run(cmd7, shell=True)
     sort()
     
     #
