@@ -162,13 +162,16 @@ def main():
     def sort():
         cmd7= '''samtools sort '''+out+"/unmapped_aln.bam"+'''  -o '''+out+"/unmapped_aln_sorted.bam"+''' '''
         # os.system(cmd7)
+        print('Running ', cmd7)
         subprocess.run(cmd7, shell=True)
     sort()
     
     #
     #subprocess.call("./continuous_region.sh", shell=True)
-    os.system('''samtools depth '''+out+"/unmapped_aln_sorted.bam"+''' | awk '{if ($3>=5) print $0}' | awk '{ if ($2!=(ploc+1)) {if (ploc!=0){printf("%s %d-%d\n",$1,s,ploc);}s=$2} ploc=$2; }' > '''+out+"/continuous_region.txt"+'''  ''')
-    
+    cmd8 = "samtools depth %s/unmapped_aln_sorted.bam | awk '{if ($3>=5) print $0}' | awk '{ if ($2!=(ploc+1)) {if (ploc!=0){printf(\"%%s %%d-%%d\\n\",$1,s,ploc);}s=$2} ploc=$2; }' > %s/continuous_region.txt" % (out, out)
+    # os.system('''samtools depth '''+out+"/unmapped_aln_sorted.bam"+''' | awk '{if ($3>=5) print $0}' | awk '{ if ($2!=(ploc+1)) {if (ploc!=0){printf("%s %d-%d\n",$1,s,ploc);}s=$2} ploc=$2; }' > '''+out+"/continuous_region.txt"+'''  ''')
+    subprocess.run(cmd8)
+
     print ("The continous length")
     file =open(out+"/continuous_region.txt", "r")
 
